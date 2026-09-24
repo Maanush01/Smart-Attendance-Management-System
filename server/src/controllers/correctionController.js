@@ -96,7 +96,27 @@ const reviewCorrectionRequest = async (req, res) => {
   }
 };
 
+const getCorrectionRequests = async (req, res) => {
+  try {
+    const requests = await CorrectionRequest.find()
+      .populate("requestedBy", "name email")
+      .populate("reviewedBy", "name email")
+      .populate("attendanceRecordId");
+
+    res.json({
+      success: true,
+      data: requests,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
 module.exports = {
   createCorrectionRequest,
   reviewCorrectionRequest,
+  getCorrectionRequests,
 };

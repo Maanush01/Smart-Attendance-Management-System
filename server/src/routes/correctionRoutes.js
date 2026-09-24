@@ -5,6 +5,7 @@ const authorize = require("../middleware/roleMiddleware");
 const {
   createCorrectionRequest,
   reviewCorrectionRequest,
+  getCorrectionRequests,
 } = require("../controllers/correctionController");
 
 const router = express.Router();
@@ -22,5 +23,7 @@ router.patch(
   authorize("ADMIN", "HOD"),
   reviewCorrectionRequest,
 );
+
+router.get("/", protect, authorize("ADMIN", "HOD"), getCorrectionRequests);
 
 module.exports = router;

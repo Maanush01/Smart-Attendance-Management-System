@@ -20,6 +20,8 @@ const facultyAssignmentRoutes = require("./routes/facultyAssignmentRoutes");
 const classSessionRoutes = require("./routes/classSessionRoutes");
 const attendanceRoutes = require("./routes/attendanceRoutes");
 const correctionRoutes = require("./routes/correctionRoutes");
+const facultyRoutes = require("./routes/facultyRoutes");
+const auditLogRoutes = require("./routes/auditLogRoutes");
 
 app.use("/api/auth", authRoutes);
 app.use("/api/departments", departmentRoutes);
@@ -31,6 +33,8 @@ app.use("/api/faculty-assignments", facultyAssignmentRoutes);
 app.use("/api/class-sessions", classSessionRoutes);
 app.use("/api/attendance", attendanceRoutes);
 app.use("/api/corrections", correctionRoutes);
+app.use("/api/faculty", facultyRoutes);
+app.use("/api/audit-logs", auditLogRoutes);
 
 app.get("/api/health", (req, res) => {
   res.json({
