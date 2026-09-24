@@ -2,6 +2,12 @@ require("dotenv").config();
 const connectDB = require("./config/db");
 
 const express = require("express");
+const cors = require("cors");
+
+const app = express();
+
+app.use(cors());
+app.use(express.json());
 
 const authRoutes = require("./routes/authRoutes");
 const protect = require("./middleware/authMiddleware");
@@ -14,10 +20,6 @@ const facultyAssignmentRoutes = require("./routes/facultyAssignmentRoutes");
 const classSessionRoutes = require("./routes/classSessionRoutes");
 const attendanceRoutes = require("./routes/attendanceRoutes");
 const correctionRoutes = require("./routes/correctionRoutes");
-
-const app = express();
-
-app.use(express.json());
 
 app.use("/api/auth", authRoutes);
 app.use("/api/departments", departmentRoutes);
