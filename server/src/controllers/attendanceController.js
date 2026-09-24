@@ -26,6 +26,26 @@ const markAttendance = async (req, res) => {
   }
 };
 
+const getAttendance = async (req, res) => {
+  try {
+    const records = await AttendanceRecord.find()
+      .populate("studentId")
+      .populate("sessionId")
+      .populate("markedBy", "name email");
+
+    res.json({
+      success: true,
+      data: records,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
 module.exports = {
   markAttendance,
+  getAttendance,
 };
