@@ -5,6 +5,6 @@ const authorize = require("../middleware/roleMiddleware");
 
 const router = express.Router();
 
-router.get("/", protect, authorize("ADMIN"), getFaculty);
+router.get("/", protect, authorize("ADMIN", "HOD"), getFaculty);
 
 module.exports = router;

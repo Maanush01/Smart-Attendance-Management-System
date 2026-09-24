@@ -133,10 +133,91 @@ function App() {
         />
 
         <Route
+          path="/hod/students"
+          element={
+            <ProtectedRoute allowedRoles={["HOD"]}>
+              <Students />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/hod/faculty"
+          element={
+            <ProtectedRoute allowedRoles={["HOD"]}>
+              <Faculty />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/hod/subjects"
+          element={
+            <ProtectedRoute allowedRoles={["HOD"]}>
+              <Subjects />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/hod/attendance"
+          element={
+            <ProtectedRoute allowedRoles={["HOD"]}>
+              <AttendanceHistory />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/hod/low-attendance"
+          element={
+            <ProtectedRoute allowedRoles={["HOD"]}>
+              <LowAttendance />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/hod/correction-requests"
+          element={
+            <ProtectedRoute allowedRoles={["HOD"]}>
+              <CorrectionRequests />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
           path="/faculty"
           element={
             <ProtectedRoute allowedRoles={["FACULTY"]}>
               <FacultyDashboard />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/faculty/assignments"
+          element={
+            <ProtectedRoute allowedRoles={["FACULTY"]}>
+              <FacultyAssignments />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/faculty/sessions"
+          element={
+            <ProtectedRoute allowedRoles={["FACULTY"]}>
+              <ClassSessions />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/faculty/attendance"
+          element={
+            <ProtectedRoute allowedRoles={["FACULTY"]}>
+              <AttendanceHistory />
             </ProtectedRoute>
           }
         />

@@ -34,7 +34,27 @@ const createStudent = async (req, res) => {
 
 const getStudents = async (req, res) => {
   try {
-    const students = await Student.find({ isActive: true });
+    let students;
+
+    if (req.user.role === "HOD") {
+      const Program = require("../models/Program");
+
+      const programs = await Program.find({
+        departmentId: req.user.departmentId,
+        isActive: true,
+      }).select("_id");
+
+      const programIds = programs.map((program) => program._id);
+
+      students = await Student.find({
+        programId: { $in: programIds },
+        isActive: true,
+      }).populate("userId", "name email");
+    } else {
+      students = await Student.find({
+        isActive: true,
+      }).populate("userId", "name email");
+    }
 
     res.json({
       success: true,

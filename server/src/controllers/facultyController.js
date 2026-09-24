@@ -2,9 +2,20 @@ const User = require("../models/User");
 
 const getFaculty = async (req, res) => {
   try {
-    const faculty = await User.find({ role: "FACULTY" }).select(
-      "-passwordHash",
-    );
+    let faculty;
+
+    if (req.user.role === "HOD") {
+      faculty = await User.find({
+        role: "FACULTY",
+        departmentId: req.user.departmentId,
+        isActive: true,
+      }).select("-passwordHash");
+    } else {
+      faculty = await User.find({
+        role: "FACULTY",
+        isActive: true,
+      }).select("-passwordHash");
+    }
 
     res.json({
       success: true,

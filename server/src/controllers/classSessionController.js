@@ -28,7 +28,15 @@ const createSession = async (req, res) => {
 
 const getSessions = async (req, res) => {
   try {
-    const sessions = await ClassSession.find();
+    let sessions;
+
+    if (req.user.role === "FACULTY") {
+      sessions = await ClassSession.find({
+        facultyId: req.user.userId,
+      });
+    } else {
+      sessions = await ClassSession.find();
+    }
 
     res.json({
       success: true,

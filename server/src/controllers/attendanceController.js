@@ -28,10 +28,60 @@ const markAttendance = async (req, res) => {
 
 const getAttendance = async (req, res) => {
   try {
-    const records = await AttendanceRecord.find()
-      .populate("studentId")
-      .populate("sessionId")
-      .populate("markedBy", "name email");
+    let records;
+
+    if (req.user.role === "STUDENT") {
+      const Student = require("../models/Student");
+
+      const student = await Student.findOne({
+        userId: req.user.userId,
+        isActive: true,
+      });
+
+      if (!student) {
+        return res.status(404).json({
+          success: false,
+          message: "Student record not found",
+        });
+      }
+
+      records = await AttendanceRecord.find({
+        studentId: student._id,
+      })
+        .populate("studentId")
+        .populate({
+          path: "sessionId",
+          populate: {
+            path: "subjectId",
+            select: "name code",
+          },
+        })
+        .populate("markedBy", "name email");
+    } else if (req.user.role === "FACULTY") {
+      records = await AttendanceRecord.find({
+        markedBy: req.user.userId,
+      })
+        .populate("studentId")
+        .populate({
+          path: "sessionId",
+          populate: {
+            path: "subjectId",
+            select: "name code",
+          },
+        })
+        .populate("markedBy", "name email");
+    } else {
+      records = await AttendanceRecord.find()
+        .populate("studentId")
+        .populate({
+          path: "sessionId",
+          populate: {
+            path: "subjectId",
+            select: "name code",
+          },
+        })
+        .populate("markedBy", "name email");
+    }
 
     res.json({
       success: true,
@@ -49,9 +99,29 @@ const getLowAttendance = async (req, res) => {
   try {
     const threshold = 75;
 
-    const records = await AttendanceRecord.find()
-      .populate("studentId")
-      .populate("sessionId");
+    let records = await AttendanceRecord.find()
+      .populate({
+        path: "studentId",
+        populate: {
+          path: "programId",
+          select: "departmentId",
+        },
+      })
+      .populate({
+        path: "sessionId",
+        populate: {
+          path: "subjectId",
+          select: "name code",
+        },
+      });
+
+    if (req.user.role === "HOD") {
+      records = records.filter(
+        (record) =>
+          record.studentId?.programId?.departmentId?.toString() ===
+          req.user.departmentId?.toString(),
+      );
+    }
 
     const studentStats = {};
 

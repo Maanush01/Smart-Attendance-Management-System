@@ -27,9 +27,18 @@ const createAssignment = async (req, res) => {
 
 const getAssignments = async (req, res) => {
   try {
-    const assignments = await FacultyAssignment.find({
-      isActive: true,
-    });
+    let assignments;
+
+    if (req.user.role === "FACULTY") {
+      assignments = await FacultyAssignment.find({
+        facultyId: req.user.userId,
+        isActive: true,
+      });
+    } else {
+      assignments = await FacultyAssignment.find({
+        isActive: true,
+      });
+    }
 
     res.json({
       success: true,

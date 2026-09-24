@@ -24,6 +24,11 @@ router.patch(
   reviewCorrectionRequest,
 );
 
-router.get("/", protect, authorize("ADMIN", "HOD"), getCorrectionRequests);
+router.get(
+  "/",
+  protect,
+  authorize("ADMIN", "HOD", "STUDENT"),
+  getCorrectionRequests,
+);
 
 module.exports = router;

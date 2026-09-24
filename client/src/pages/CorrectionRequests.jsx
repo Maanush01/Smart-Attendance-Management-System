@@ -5,18 +5,33 @@ import { useEffect, useState } from "react";
 function CorrectionRequests() {
   const [requests, setRequests] = useState([]);
 
-  useEffect(() => {
-    const loadRequests = async () => {
-      try {
-        const response = await api.get("/corrections");
-        setRequests(response.data.data);
-      } catch (error) {
-        console.error("Failed to load correction requests:", error);
-      }
-    };
+  const loadRequests = async () => {
+    try {
+      const response = await api.get("/corrections");
+      setRequests(response.data.data);
+    } catch (error) {
+      console.error("Failed to load correction requests:", error);
+    }
+  };
 
+  useEffect(() => {
     loadRequests();
   }, []);
+
+  const reviewRequest = async (id, status) => {
+    try {
+      await api.patch(`/corrections/${id}/review`, {
+        status,
+        reviewComment: "",
+      });
+
+      alert(`Request ${status.toLowerCase()}.`);
+      loadRequests();
+    } catch (error) {
+      console.error("Failed to review correction:", error);
+      alert("Failed to review correction request.");
+    }
+  };
 
   return (
     <div>
@@ -32,6 +47,7 @@ function CorrectionRequests() {
             <th>Requested Status</th>
             <th>Reason</th>
             <th>Status</th>
+            <th>Action</th>
           </tr>
         </thead>
 
@@ -43,6 +59,24 @@ function CorrectionRequests() {
               <td>{request.requestedStatus}</td>
               <td>{request.reason}</td>
               <td>{request.status}</td>
+
+              <td>
+                {request.status === "PENDING" && (
+                  <>
+                    <button
+                      onClick={() => reviewRequest(request._id, "APPROVED")}
+                    >
+                      Approve
+                    </button>
+
+                    <button
+                      onClick={() => reviewRequest(request._id, "REJECTED")}
+                    >
+                      Reject
+                    </button>
+                  </>
+                )}
+              </td>
             </tr>
           ))}
         </tbody>
@@ -50,24 +84,5 @@ function CorrectionRequests() {
     </div>
   );
 }
-
-const getCorrectionRequests = async (req, res) => {
-  try {
-    const requests = await CorrectionRequest.find()
-      .populate("requestedBy", "name email")
-      .populate("reviewedBy", "name email")
-      .populate("attendanceRecordId");
-
-    res.json({
-      success: true,
-      data: requests,
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message,
-    });
-  }
-};
 
 export default CorrectionRequests;
