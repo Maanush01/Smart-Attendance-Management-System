@@ -45,7 +45,56 @@ const getAttendance = async (req, res) => {
   }
 };
 
+const getLowAttendance = async (req, res) => {
+  try {
+    const threshold = 75;
+
+    const records = await AttendanceRecord.find()
+      .populate("studentId")
+      .populate("sessionId");
+
+    const studentStats = {};
+
+    records.forEach((record) => {
+      const studentId = record.studentId._id.toString();
+
+      if (!studentStats[studentId]) {
+        studentStats[studentId] = {
+          student: record.studentId,
+          total: 0,
+          present: 0,
+        };
+      }
+
+      studentStats[studentId].total++;
+
+      if (record.status === "PRESENT" || record.status === "LATE") {
+        studentStats[studentId].present++;
+      }
+    });
+
+    const lowAttendance = Object.values(studentStats)
+      .map((item) => ({
+        ...item,
+        percentage: (item.present / item.total) * 100,
+      }))
+      .filter((item) => item.percentage < threshold);
+
+    res.json({
+      success: true,
+      threshold,
+      data: lowAttendance,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
 module.exports = {
   markAttendance,
   getAttendance,
+  getLowAttendance,
 };
