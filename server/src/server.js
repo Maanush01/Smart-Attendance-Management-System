@@ -5,12 +5,14 @@ const express = require("express");
 
 const authRoutes = require("./routes/authRoutes");
 const protect = require("./middleware/authMiddleware");
+const departmentRoutes = require("./routes/departmentRoutes");
 
 const app = express();
 
 app.use(express.json());
 
 app.use("/api/auth", authRoutes);
+app.use("/api/departments", departmentRoutes);
 
 app.get("/api/health", (req, res) => {
   res.json({
