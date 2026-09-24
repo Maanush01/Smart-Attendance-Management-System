@@ -34,6 +34,54 @@ const createCorrectionRequest = async (req, res) => {
   }
 };
 
+const reviewCorrectionRequest = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status, reviewComment } = req.body;
+
+    if (!["APPROVED", "REJECTED"].includes(status)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid review status",
+      });
+    }
+
+    const correction = await CorrectionRequest.findById(id);
+
+    if (!correction) {
+      return res.status(404).json({
+        success: false,
+        message: "Correction request not found",
+      });
+    }
+
+    correction.status = status;
+    correction.reviewedBy = req.user.userId;
+    correction.reviewedAt = new Date();
+    correction.reviewComment = reviewComment || "";
+
+    if (status === "APPROVED") {
+      await AttendanceRecord.findByIdAndUpdate(correction.attendanceRecordId, {
+        status: correction.requestedStatus,
+        markedBy: req.user.userId,
+      });
+    }
+
+    await correction.save();
+
+    res.json({
+      success: true,
+      data: correction,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
 module.exports = {
   createCorrectionRequest,
+  reviewCorrectionRequest,
 };
