@@ -9,6 +9,8 @@ const departmentRoutes = require("./routes/departmentRoutes");
 const programRoutes = require("./routes/programRoutes");
 const sectionRoutes = require("./routes/sectionRoutes");
 const studentRoutes = require("./routes/studentRoutes");
+const subjectRoutes = require("./routes/subjectRoutes");
+const facultyAssignmentRoutes = require("./routes/facultyAssignmentRoutes");
 
 const app = express();
 
@@ -19,6 +21,8 @@ app.use("/api/departments", departmentRoutes);
 app.use("/api/programs", programRoutes);
 app.use("/api/sections", sectionRoutes);
 app.use("/api/students", studentRoutes);
+app.use("/api/subjects", subjectRoutes);
+app.use("/api/faculty-assignments", facultyAssignmentRoutes);
 
 app.get("/api/health", (req, res) => {
   res.json({
