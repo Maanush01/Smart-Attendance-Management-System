@@ -1,3 +1,4 @@
+const AuditLog = require("../models/AuditLog");
 const CorrectionRequest = require("../models/CorrectionRequest");
 const AttendanceRecord = require("../models/AttendanceRecord");
 
@@ -68,6 +69,20 @@ const reviewCorrectionRequest = async (req, res) => {
     }
 
     await correction.save();
+
+    await AuditLog.create({
+      actorId: req.user.userId,
+      action: `CORRECTION_${status}`,
+      entityType: "CorrectionRequest",
+      entityId: correction._id,
+      oldValue: {
+        status: "PENDING",
+      },
+      newValue: {
+        status: correction.status,
+        attendanceStatus: correction.requestedStatus,
+      },
+    });
 
     res.json({
       success: true,
