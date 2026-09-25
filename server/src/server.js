@@ -6,7 +6,11 @@ const cors = require("cors");
 
 const app = express();
 
-app.use(cors());
+app.use(
+  cors({
+    origin: process.env.CLIENT_ORIGIN || "http://localhost:5173",
+  }),
+);
 app.use(express.json());
 
 const authRoutes = require("./routes/authRoutes");

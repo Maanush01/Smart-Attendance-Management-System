@@ -61,7 +61,7 @@ function Subjects() {
     <div>
       <Navbar />
 
-      <h1>Subjects</h1>
+      <h1 className="page-heading">Subjects</h1>
 
       <h2>Create Subject</h2>
 
@@ -119,31 +119,33 @@ function Subjects() {
 
       <h2>Subject List</h2>
 
-      <table border="1">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Code</th>
-            <th>Program</th>
-            <th>Semester</th>
-            <th>Credits</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          {subjects.map((subject) => (
-            <tr key={subject._id}>
-              <td>{subject.name}</td>
-              <td>{subject.code}</td>
-              <td>{subject.programId?.name || "N/A"}</td>
-              <td>{subject.semester}</td>
-              <td>{subject.credits}</td>
-              <td>{subject.isActive ? "Active" : "Inactive"}</td>
+      <div className="table-wrap">
+        <table className="data-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Code</th>
+              <th>Program</th>
+              <th>Semester</th>
+              <th>Credits</th>
+              <th>Status</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+
+          <tbody>
+            {subjects.map((subject) => (
+              <tr key={subject._id}>
+                <td>{subject.name}</td>
+                <td>{subject.code}</td>
+                <td>{subject.programId?.name || "N/A"}</td>
+                <td>{subject.semester}</td>
+                <td>{subject.credits}</td>
+                <td>{subject.isActive ? "Active" : "Inactive"}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

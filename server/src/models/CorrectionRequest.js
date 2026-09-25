@@ -50,4 +50,9 @@ const correctionRequestSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
+correctionRequestSchema.index(
+  { attendanceRecordId: 1, requestedBy: 1 },
+  { unique: true, partialFilterExpression: { status: "PENDING" } },
+);
+
 module.exports = mongoose.model("CorrectionRequest", correctionRequestSchema);

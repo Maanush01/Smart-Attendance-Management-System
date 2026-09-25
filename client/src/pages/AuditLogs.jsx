@@ -22,29 +22,31 @@ function AuditLogs() {
     <div>
       <Navbar />
 
-      <h1>Audit Logs</h1>
+      <h1 className="page-heading">Audit Logs</h1>
 
-      <table border="1">
-        <thead>
-          <tr>
-            <th>Action</th>
-            <th>Entity</th>
-            <th>Actor</th>
-            <th>Date</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          {logs.map((log) => (
-            <tr key={log._id}>
-              <td>{log.action}</td>
-              <td>{log.entityType}</td>
-              <td>{log.actorId?.name || "N/A"}</td>
-              <td>{new Date(log.createdAt).toLocaleString()}</td>
+      <div className="table-wrap">
+        <table className="data-table">
+          <thead>
+            <tr>
+              <th>Action</th>
+              <th>Entity</th>
+              <th>Actor</th>
+              <th>Date</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+
+          <tbody>
+            {logs.map((log) => (
+              <tr key={log._id}>
+                <td>{log.action}</td>
+                <td>{log.entityType}</td>
+                <td>{log.actorId?.name || "N/A"}</td>
+                <td>{new Date(log.createdAt).toLocaleString()}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

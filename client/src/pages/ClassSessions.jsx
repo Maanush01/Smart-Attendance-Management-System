@@ -1,6 +1,7 @@
 import Navbar from "../components/Navbar";
 import api from "../api/axios";
 import { useEffect, useState } from "react";
+import { CalendarPlus, Check, X } from "lucide-react";
 
 function ClassSessions() {
   const [sessions, setSessions] = useState([]);
@@ -21,11 +22,12 @@ function ClassSessions() {
 
   const user = JSON.parse(localStorage.getItem("user"));
   const isAdmin = user?.role === "ADMIN";
+  const isFaculty = user?.role === "FACULTY";
 
   useEffect(() => {
     loadSessions();
 
-    if (isAdmin) {
+    if (isAdmin || isFaculty) {
       loadFormData();
     }
   }, []);
@@ -41,16 +43,19 @@ function ClassSessions() {
 
   const loadFormData = async () => {
     try {
-      const [subjectsResponse, sectionsResponse, facultyResponse] =
-        await Promise.all([
-          api.get("/subjects"),
-          api.get("/sections"),
-          api.get("/faculty"),
-        ]);
+      const responses = await Promise.all([
+        api.get("/subjects"),
+        api.get("/sections"),
+        ...(isAdmin ? [api.get("/faculty")] : []),
+      ]);
 
-      setSubjects(subjectsResponse.data.data);
-      setSections(sectionsResponse.data.data);
-      setFaculty(facultyResponse.data.data);
+      setSubjects(responses[0].data.data);
+      setSections(responses[1].data.data);
+      if (isAdmin) {
+        setFaculty(responses[2].data.data);
+      } else {
+        setFacultyId(user?.id || "");
+      }
     } catch (error) {
       console.error("Failed to load session form data:", error);
     }
@@ -87,7 +92,10 @@ function ClassSessions() {
 
   const openAttendance = async (session) => {
     try {
-      const response = await api.get("/students");
+      const sectionId = session.sectionId?._id || session.sectionId;
+      const response = await api.get(
+        `/students?sectionId=${encodeURIComponent(sectionId)}`,
+      );
 
       setStudents(response.data.data);
       setSelectedSession(session);
@@ -137,9 +145,15 @@ function ClassSessions() {
     <div>
       <Navbar />
 
-      <h1>Class Sessions</h1>
+      <h1
+        className="page-heading"
+        style={{ display: "flex", alignItems: "center", gap: ".65rem" }}
+      >
+        <CalendarPlus size={24} color="#3157a6" />
+        Class Sessions
+      </h1>
 
-      {isAdmin && (
+      {(isAdmin || isFaculty) && (
         <div>
           <h2>Create Class Session</h2>
 
@@ -172,19 +186,21 @@ function ClassSessions() {
               ))}
             </select>
 
-            <select
-              value={facultyId}
-              onChange={(e) => setFacultyId(e.target.value)}
-              required
-            >
-              <option value="">Select Faculty</option>
+            {isAdmin && (
+              <select
+                value={facultyId}
+                onChange={(e) => setFacultyId(e.target.value)}
+                required
+              >
+                <option value="">Select Faculty</option>
 
-              {faculty.map((member) => (
-                <option key={member._id} value={member._id}>
-                  {member.name}
-                </option>
-              ))}
-            </select>
+                {faculty.map((member) => (
+                  <option key={member._id} value={member._id}>
+                    {member.name}
+                  </option>
+                ))}
+              </select>
+            )}
 
             <input
               type="date"
@@ -214,42 +230,60 @@ function ClassSessions() {
 
       <h2>Session List</h2>
 
-      <table border="1">
-        <thead>
-          <tr>
-            <th>Subject</th>
-            <th>Section</th>
-            <th>Faculty</th>
-            <th>Date</th>
-            <th>Start Time</th>
-            <th>End Time</th>
-            <th>Status</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          {sessions.map((session) => (
-            <tr key={session._id}>
-              <td>{session.subjectId?.name || "N/A"}</td>
-              <td>{session.sectionId?.name || "N/A"}</td>
-              <td>{session.facultyId?.name || "N/A"}</td>
-              <td>{new Date(session.date).toLocaleDateString()}</td>
-              <td>{session.startTime}</td>
-              <td>{session.endTime}</td>
-              <td>{session.status}</td>
-
-              <td>
-                {user?.role === "FACULTY" && (
-                  <button onClick={() => openAttendance(session)}>
-                    Mark Attendance
-                  </button>
-                )}
-              </td>
+      <div className="table-wrap">
+        <table className="data-table">
+          <thead>
+            <tr>
+              <th>Subject</th>
+              <th>Section</th>
+              <th>Faculty</th>
+              <th>Date</th>
+              <th>Start Time</th>
+              <th>End Time</th>
+              <th>Status</th>
+              <th>Action</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+
+          <tbody>
+            {sessions.length === 0 ? (
+              <tr>
+                <td
+                  colSpan="8"
+                  style={{
+                    padding: "2rem",
+                    textAlign: "center",
+                    color: "#64748b",
+                  }}
+                >
+                  No class sessions yet.
+                </td>
+              </tr>
+            ) : (
+              sessions.map((session) => (
+                <tr key={session._id}>
+                  <td>{session.subjectId?.name || "N/A"}</td>
+                  <td>{session.sectionId?.name || "N/A"}</td>
+                  <td>{session.facultyId?.name || "N/A"}</td>
+                  <td>{new Date(session.date).toISOString().slice(0, 10)}</td>
+                  <td>{session.startTime}</td>
+                  <td>{session.endTime}</td>
+                  <td>{session.status}</td>
+
+                  <td>
+                    {user?.role === "FACULTY" && (
+                      <button onClick={() => openAttendance(session)}>
+                        <Check size={16} style={{ marginRight: ".4rem" }} />
+                        Mark Attendance
+                      </button>
+                    )}
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
 
       {selectedSession && (
         <div>
@@ -257,42 +291,53 @@ function ClassSessions() {
             Mark Attendance - {selectedSession.subjectId?.name || "Session"}
           </h2>
 
-          <table border="1">
-            <thead>
-              <tr>
-                <th>Student</th>
-                <th>Roll Number</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {students.map((student) => (
-                <tr key={student._id}>
-                  <td>{student.userId?.name || "N/A"}</td>
-                  <td>{student.rollNumber}</td>
-
-                  <td>
-                    <select
-                      value={attendance[student._id]}
-                      onChange={(e) =>
-                        updateAttendance(student._id, e.target.value)
-                      }
-                    >
-                      <option value="PRESENT">Present</option>
-                      <option value="ABSENT">Absent</option>
-                      <option value="LATE">Late</option>
-                      <option value="EXCUSED">Excused</option>
-                    </select>
-                  </td>
+          <div className="table-wrap">
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th>Student</th>
+                  <th>Roll Number</th>
+                  <th>Status</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
 
-          <button onClick={submitAttendance}>Submit Attendance</button>
+              <tbody>
+                {students.map((student) => (
+                  <tr key={student._id}>
+                    <td>{student.userId?.name || "N/A"}</td>
+                    <td>{student.rollNumber}</td>
 
-          <button onClick={() => setSelectedSession(null)}>Cancel</button>
+                    <td>
+                      <select
+                        value={attendance[student._id]}
+                        onChange={(e) =>
+                          updateAttendance(student._id, e.target.value)
+                        }
+                      >
+                        <option value="PRESENT">Present</option>
+                        <option value="ABSENT">Absent</option>
+                        <option value="LATE">Late</option>
+                        <option value="EXCUSED">Excused</option>
+                      </select>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          <button className="button" onClick={submitAttendance}>
+            <Check size={16} style={{ marginRight: ".4rem" }} />
+            Submit Attendance
+          </button>
+
+          <button
+            className="button button-secondary"
+            onClick={() => setSelectedSession(null)}
+          >
+            <X size={16} style={{ marginRight: ".4rem" }} />
+            Cancel
+          </button>
         </div>
       )}
     </div>

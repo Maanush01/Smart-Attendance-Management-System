@@ -9,7 +9,7 @@ const {
 
 const router = express.Router();
 
-router.get("/", protect, getSections);
+router.get("/", protect, authorize("ADMIN", "HOD", "FACULTY"), getSections);
 
 router.post("/", protect, authorize("ADMIN"), createSection);
 

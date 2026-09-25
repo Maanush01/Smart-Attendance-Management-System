@@ -6,7 +6,14 @@ const login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    const user = await User.findOne({ email });
+    if (!email || !password) {
+      return res.status(400).json({
+        success: false,
+        message: "Email and password are required",
+      });
+    }
+
+    const user = await User.findOne({ email, isActive: true });
 
     if (!user) {
       return res.status(401).json({
@@ -57,6 +64,20 @@ const login = async (req, res) => {
 const createUser = async (req, res) => {
   try {
     const { name, email, password, role, departmentId } = req.body;
+
+    if (!name?.trim() || !email?.trim() || !password || !role) {
+      return res.status(400).json({
+        success: false,
+        message: "Name, email, password, and role are required",
+      });
+    }
+
+    if (!["ADMIN", "HOD", "FACULTY", "STUDENT"].includes(role)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid user role",
+      });
+    }
 
     const existingUser = await User.findOne({ email });
 

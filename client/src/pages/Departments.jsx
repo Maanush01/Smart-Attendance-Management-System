@@ -45,7 +45,7 @@ function Departments() {
     <div>
       <Navbar />
 
-      <h1>Departments</h1>
+      <h1 className="page-heading">Departments</h1>
 
       <h2>Create Department</h2>
 
@@ -71,25 +71,27 @@ function Departments() {
 
       <h2>Department List</h2>
 
-      <table border="1">
-        <thead>
-          <tr>
-            <th>Dept Name</th>
-            <th>Dept Code</th>
-            <th>Active Status</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          {departments.map((dept) => (
-            <tr key={dept._id}>
-              <td>{dept.name}</td>
-              <td>{dept.code}</td>
-              <td>{dept.isActive ? "Active" : "Inactive"}</td>
+      <div className="table-wrap">
+        <table className="data-table">
+          <thead>
+            <tr>
+              <th>Dept Name</th>
+              <th>Dept Code</th>
+              <th>Active Status</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+
+          <tbody>
+            {departments.map((dept) => (
+              <tr key={dept._id}>
+                <td>{dept.name}</td>
+                <td>{dept.code}</td>
+                <td>{dept.isActive ? "Active" : "Inactive"}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

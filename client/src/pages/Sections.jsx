@@ -61,7 +61,7 @@ function Sections() {
     <div>
       <Navbar />
 
-      <h1>Sections</h1>
+      <h1 className="page-heading">Sections</h1>
 
       <h2>Create Section</h2>
 
@@ -118,31 +118,33 @@ function Sections() {
 
       <h2>Section List</h2>
 
-      <table border="1">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Program</th>
-            <th>Batch Year</th>
-            <th>Semester</th>
-            <th>Academic Year</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          {sections.map((section) => (
-            <tr key={section._id}>
-              <td>{section.name}</td>
-              <td>{section.programId?.name || "N/A"}</td>
-              <td>{section.batchYear}</td>
-              <td>{section.semester}</td>
-              <td>{section.academicYear}</td>
-              <td>{section.isActive ? "Active" : "Inactive"}</td>
+      <div className="table-wrap">
+        <table className="data-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Program</th>
+              <th>Batch Year</th>
+              <th>Semester</th>
+              <th>Academic Year</th>
+              <th>Status</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+
+          <tbody>
+            {sections.map((section) => (
+              <tr key={section._id}>
+                <td>{section.name}</td>
+                <td>{section.programId?.name || "N/A"}</td>
+                <td>{section.batchYear}</td>
+                <td>{section.semester}</td>
+                <td>{section.academicYear}</td>
+                <td>{section.isActive ? "Active" : "Inactive"}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

@@ -58,7 +58,7 @@ function Programs() {
     <div>
       <Navbar />
 
-      <h1>Programs</h1>
+      <h1 className="page-heading">Programs</h1>
 
       <h2>Create Program</h2>
 
@@ -107,29 +107,31 @@ function Programs() {
 
       <h2>Program List</h2>
 
-      <table border="1">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Code</th>
-            <th>Department</th>
-            <th>Duration</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          {programs.map((program) => (
-            <tr key={program._id}>
-              <td>{program.name}</td>
-              <td>{program.code}</td>
-              <td>{program.departmentId?.name || "N/A"}</td>
-              <td>{program.durationYears} Years</td>
-              <td>{program.isActive ? "Active" : "Inactive"}</td>
+      <div className="table-wrap">
+        <table className="data-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Code</th>
+              <th>Department</th>
+              <th>Duration</th>
+              <th>Status</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+
+          <tbody>
+            {programs.map((program) => (
+              <tr key={program._id}>
+                <td>{program.name}</td>
+                <td>{program.code}</td>
+                <td>{program.departmentId?.name || "N/A"}</td>
+                <td>{program.durationYears} Years</td>
+                <td>{program.isActive ? "Active" : "Inactive"}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

@@ -25,33 +25,35 @@ function LowAttendance() {
     <div>
       <Navbar />
 
-      <h1>Low Attendance</h1>
+      <h1 className="page-heading">Low Attendance</h1>
 
       <p>Students below {threshold}% attendance</p>
 
-      <table border="1">
-        <thead>
-          <tr>
-            <th>Student</th>
-            <th>Roll Number</th>
-            <th>Total Classes</th>
-            <th>Present</th>
-            <th>Attendance %</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          {students.map((item) => (
-            <tr key={item.student._id}>
-              <td>{item.student.userId?.name || "N/A"}</td>
-              <td>{item.student.rollNumber}</td>
-              <td>{item.total}</td>
-              <td>{item.present}</td>
-              <td>{item.percentage.toFixed(2)}%</td>
+      <div className="table-wrap">
+        <table className="data-table">
+          <thead>
+            <tr>
+              <th>Student</th>
+              <th>Roll Number</th>
+              <th>Total Classes</th>
+              <th>Present</th>
+              <th>Attendance %</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+
+          <tbody>
+            {students.map((item) => (
+              <tr key={item.student._id}>
+                <td>{item.student.userId?.name || "N/A"}</td>
+                <td>{item.student.rollNumber}</td>
+                <td>{item.total}</td>
+                <td>{item.present}</td>
+                <td>{item.percentage.toFixed(2)}%</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

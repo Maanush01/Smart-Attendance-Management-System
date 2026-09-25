@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { CalendarCheck, ClipboardEdit, Percent } from "lucide-react";
 import Navbar from "../components/Navbar";
 import api from "../api/axios";
 
@@ -26,7 +27,7 @@ function StudentDashboard() {
 
       if (attendanceData.length > 0) {
         const present = attendanceData.filter(
-          (record) => record.status === "PRESENT" || record.status === "LATE",
+          (record) => record.status === "PRESENT",
         ).length;
 
         setAttendancePercentage((present / attendanceData.length) * 100);
@@ -69,122 +70,243 @@ function StudentDashboard() {
   };
 
   return (
-    <div>
+    <div className="page-shell">
       <Navbar />
 
-      <h1>Student Dashboard</h1>
+      <main className="page-content">
+        <p className="eyebrow">Personal attendance</p>
+        <h1
+          className="page-heading"
+          style={{ display: "flex", alignItems: "center", gap: ".65rem" }}
+        >
+          <CalendarCheck size={24} color="#3157a6" />
+          Student Dashboard
+        </h1>
 
-      <div>
-        <h3>Attendance Percentage</h3>
-        <p>{attendancePercentage.toFixed(2)}%</p>
-      </div>
+        <div className="stat-grid">
+          <div className="stat-card">
+            <h3>
+              <Percent
+                size={17}
+                style={{
+                  verticalAlign: "middle",
+                  marginRight: ".4rem",
+                  color: "#15803d",
+                }}
+              />
+              Attendance Percentage
+            </h3>
+            <p>{attendancePercentage.toFixed(2)}%</p>
+          </div>
 
-      <div>
-        <h3>Total Classes</h3>
-        <p>{records.length}</p>
-      </div>
+          <div className="stat-card">
+            <h3>
+              <CalendarCheck
+                size={17}
+                style={{
+                  verticalAlign: "middle",
+                  marginRight: ".4rem",
+                  color: "#3157a6",
+                }}
+              />
+              Total Classes
+            </h3>
+            <p>{records.length}</p>
+          </div>
+        </div>
 
-      <h2>Attendance History</h2>
-
-      <table border="1">
-        <thead>
-          <tr>
-            <th>Subject</th>
-            <th>Date</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          {records.map((record) => (
-            <tr key={record._id}>
-              <td>{record.sessionId?.subjectId?.name || "N/A"}</td>
-              <td>
-                {record.sessionId?.date
-                  ? new Date(record.sessionId.date).toLocaleDateString()
-                  : "N/A"}
-              </td>
-              <td>{record.status}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-
-      <h2>Request Attendance Correction</h2>
-
-      <form onSubmit={submitCorrection}>
-        <div>
-          <label>Attendance Record: </label>
-
-          <select
-            value={selectedRecord}
-            onChange={(e) => setSelectedRecord(e.target.value)}
+        <section
+          className="content-card"
+          style={{ marginBottom: "1.5rem", overflow: "hidden" }}
+        >
+          <h2
+            style={{
+              padding: "1.25rem 1.25rem 0",
+              margin: 0,
+              display: "flex",
+              alignItems: "center",
+              gap: ".5rem",
+            }}
           >
-            <option value="">Select record</option>
+            <CalendarCheck size={19} color="#3157a6" />
+            Attendance History
+          </h2>
 
-            {records.map((record) => (
-              <option key={record._id} value={record._id}>
-                {record.sessionId?.subjectId?.name || "N/A"} -{" "}
-                {record.sessionId?.date
-                  ? new Date(record.sessionId.date).toLocaleDateString()
-                  : "N/A"}{" "}
-                - {record.status}
-              </option>
-            ))}
-          </select>
-        </div>
+          <div className="table-wrap" style={{ border: 0, boxShadow: "none" }}>
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th>Subject</th>
+                  <th>Date</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {records.length === 0 ? (
+                  <tr>
+                    <td
+                      colSpan="3"
+                      style={{
+                        padding: "2rem",
+                        textAlign: "center",
+                        color: "#64748b",
+                      }}
+                    >
+                      No attendance records yet.
+                    </td>
+                  </tr>
+                ) : (
+                  records.map((record) => (
+                    <tr key={record._id}>
+                      <td>{record.sessionId?.subjectId?.name || "N/A"}</td>
+                      <td>
+                        {record.sessionId?.date
+                          ? new Date(record.sessionId.date)
+                              .toISOString()
+                              .slice(0, 10)
+                          : "N/A"}
+                      </td>
+                      <td>
+                        <span
+                          className={`badge badge-${record.status.toLowerCase()}`}
+                        >
+                          {record.status}
+                        </span>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </section>
 
-        <div>
-          <label>Requested Status: </label>
-
-          <select
-            value={requestedStatus}
-            onChange={(e) => setRequestedStatus(e.target.value)}
+        <section
+          className="content-card"
+          style={{ padding: "1.25rem", marginBottom: "1.5rem" }}
+        >
+          <h2
+            style={{
+              margin: "0 0 1rem",
+              display: "flex",
+              alignItems: "center",
+              gap: ".5rem",
+            }}
           >
-            <option value="PRESENT">Present</option>
-            <option value="ABSENT">Absent</option>
-            <option value="LATE">Late</option>
-            <option value="EXCUSED">Excused</option>
-          </select>
-        </div>
+            <ClipboardEdit size={19} color="#3157a6" />
+            Request Attendance Correction
+          </h2>
 
-        <div>
-          <label>Reason: </label>
+          <form className="form-stack" onSubmit={submitCorrection}>
+            <div>
+              <label>Attendance Record: </label>
+              <select
+                value={selectedRecord}
+                onChange={(e) => setSelectedRecord(e.target.value)}
+              >
+                <option value="">Select record</option>
+                {records.map((record) => (
+                  <option key={record._id} value={record._id}>
+                    {record.sessionId?.subjectId?.name || "N/A"} -{" "}
+                    {record.sessionId?.date
+                      ? new Date(record.sessionId.date)
+                          .toISOString()
+                          .slice(0, 10)
+                      : "N/A"}{" "}
+                    - {record.status}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-          <input
-            type="text"
-            value={reason}
-            onChange={(e) => setReason(e.target.value)}
-            placeholder="Enter reason"
-          />
-        </div>
+            <div>
+              <label>Requested Status: </label>
+              <select
+                value={requestedStatus}
+                onChange={(e) => setRequestedStatus(e.target.value)}
+              >
+                <option value="PRESENT">Present</option>
+                <option value="ABSENT">Absent</option>
+                <option value="LATE">Late</option>
+                <option value="EXCUSED">Excused</option>
+              </select>
+            </div>
 
-        <button type="submit">Submit Correction Request</button>
-      </form>
+            <div>
+              <label>Reason: </label>
+              <input
+                type="text"
+                value={reason}
+                onChange={(e) => setReason(e.target.value)}
+                placeholder="Enter reason"
+              />
+            </div>
 
-      <h2>My Correction Requests</h2>
+            <button className="button" type="submit">
+              Submit Correction Request
+            </button>
+          </form>
+        </section>
 
-      <table border="1">
-        <thead>
-          <tr>
-            <th>Old Status</th>
-            <th>Requested Status</th>
-            <th>Reason</th>
-            <th>Status</th>
-          </tr>
-        </thead>
+        <section className="content-card" style={{ overflow: "hidden" }}>
+          <h2
+            style={{
+              padding: "1.25rem 1.25rem 0",
+              margin: 0,
+              display: "flex",
+              alignItems: "center",
+              gap: ".5rem",
+            }}
+          >
+            <ClipboardEdit size={19} color="#3157a6" />
+            My Correction Requests
+          </h2>
 
-        <tbody>
-          {requests.map((request) => (
-            <tr key={request._id}>
-              <td>{request.oldStatus}</td>
-              <td>{request.requestedStatus}</td>
-              <td>{request.reason}</td>
-              <td>{request.status}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+          <div className="table-wrap" style={{ border: 0, boxShadow: "none" }}>
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th>Old Status</th>
+                  <th>Requested Status</th>
+                  <th>Reason</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {requests.length === 0 ? (
+                  <tr>
+                    <td
+                      colSpan="4"
+                      style={{
+                        padding: "2rem",
+                        textAlign: "center",
+                        color: "#64748b",
+                      }}
+                    >
+                      No correction requests yet.
+                    </td>
+                  </tr>
+                ) : (
+                  requests.map((request) => (
+                    <tr key={request._id}>
+                      <td>{request.oldStatus}</td>
+                      <td>{request.requestedStatus}</td>
+                      <td>{request.reason}</td>
+                      <td>
+                        <span
+                          className={`badge badge-${request.status.toLowerCase()}`}
+                        >
+                          {request.status}
+                        </span>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </main>
     </div>
   );
 }

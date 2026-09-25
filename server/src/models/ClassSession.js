@@ -38,4 +38,7 @@ const classSessionSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
+classSessionSchema.index({ facultyId: 1, date: 1 });
+classSessionSchema.index({ sectionId: 1, date: 1 });
+
 module.exports = mongoose.model("ClassSession", classSessionSchema);

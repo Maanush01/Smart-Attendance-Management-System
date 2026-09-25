@@ -1,4 +1,7 @@
 const Student = require("../models/Student");
+const User = require("../models/User");
+const Program = require("../models/Program");
+const Section = require("../models/Section");
 
 const createStudent = async (req, res) => {
   try {
@@ -10,6 +13,51 @@ const createStudent = async (req, res) => {
       sectionId,
       admissionYear,
     } = req.body;
+
+    if (
+      !userId ||
+      !rollNumber?.trim() ||
+      !programId ||
+      !sectionId ||
+      !admissionYear
+    ) {
+      return res.status(400).json({
+        success: false,
+        message:
+          "User, roll number, program, section, and admission year are required",
+      });
+    }
+
+    const [user, program, section] = await Promise.all([
+      User.findOne({ _id: userId, role: "STUDENT", isActive: true }),
+      Program.findOne({ _id: programId, isActive: true }),
+      Section.findOne({ _id: sectionId, isActive: true }),
+    ]);
+
+    if (
+      !user ||
+      !program ||
+      !section ||
+      section.programId.toString() !== program._id.toString()
+    ) {
+      return res.status(400).json({
+        success: false,
+        message:
+          "Student user, program, and section must be valid and compatible",
+      });
+    }
+
+    const duplicate = await Student.findOne({
+      $or: [{ userId }, { rollNumber: rollNumber.trim() }],
+    });
+
+    if (duplicate) {
+      return res.status(409).json({
+        success: false,
+        message:
+          "A student profile already exists for this user or roll number",
+      });
+    }
 
     const student = await Student.create({
       userId,
@@ -34,6 +82,9 @@ const createStudent = async (req, res) => {
 
 const getStudents = async (req, res) => {
   try {
+    const sectionFilter = req.query.sectionId
+      ? { sectionId: req.query.sectionId }
+      : {};
     let students;
 
     if (req.user.role === "HOD") {
@@ -49,10 +100,12 @@ const getStudents = async (req, res) => {
       students = await Student.find({
         programId: { $in: programIds },
         isActive: true,
+        ...sectionFilter,
       }).populate("userId", "name email");
     } else {
       students = await Student.find({
         isActive: true,
+        ...sectionFilter,
       }).populate("userId", "name email");
     }
 

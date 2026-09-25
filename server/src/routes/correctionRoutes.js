@@ -10,12 +10,7 @@ const {
 
 const router = express.Router();
 
-router.post(
-  "/",
-  protect,
-  authorize("STUDENT", "FACULTY"),
-  createCorrectionRequest,
-);
+router.post("/", protect, authorize("STUDENT"), createCorrectionRequest);
 
 router.patch(
   "/:id/review",

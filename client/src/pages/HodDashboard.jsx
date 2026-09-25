@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import api from "../api/axios";
+import { AlertTriangle, BookOpen, ClipboardCheck, Users } from "lucide-react";
 
 function HodDashboard() {
   const navigate = useNavigate();
@@ -48,53 +49,137 @@ function HodDashboard() {
   }, []);
 
   return (
-    <div>
+    <div className="page-shell">
       <Navbar />
 
-      <h1>HOD Dashboard</h1>
+      <main className="page-content">
+        <p className="eyebrow">Department overview</p>
+        <h1
+          className="page-heading"
+          style={{ display: "flex", alignItems: "center", gap: ".65rem" }}
+        >
+          <ClipboardCheck size={24} color="#3157a6" />
+          HOD Dashboard
+        </h1>
 
-      <div>
-        <div>
-          <h3>Total Students</h3>
-          <p>{studentCount}</p>
+        <div className="stat-grid">
+          <div className="stat-card">
+            <h3>
+              <Users
+                size={17}
+                style={{
+                  verticalAlign: "middle",
+                  marginRight: ".4rem",
+                  color: "#3157a6",
+                }}
+              />
+              Total Students
+            </h3>
+            <p>{studentCount}</p>
+          </div>
+
+          <div className="stat-card">
+            <h3>
+              <Users
+                size={17}
+                style={{
+                  verticalAlign: "middle",
+                  marginRight: ".4rem",
+                  color: "#3157a6",
+                }}
+              />
+              Total Faculty
+            </h3>
+            <p>{facultyCount}</p>
+          </div>
+
+          <div className="stat-card">
+            <h3>
+              <BookOpen
+                size={17}
+                style={{
+                  verticalAlign: "middle",
+                  marginRight: ".4rem",
+                  color: "#3157a6",
+                }}
+              />
+              Total Subjects
+            </h3>
+            <p>{subjectCount}</p>
+          </div>
+
+          <div className="stat-card">
+            <h3>
+              <AlertTriangle
+                size={17}
+                style={{
+                  verticalAlign: "middle",
+                  marginRight: ".4rem",
+                  color: "#a16207",
+                }}
+              />
+              Low Attendance
+            </h3>
+            <p>{lowAttendanceCount}</p>
+          </div>
+
+          <div className="stat-card">
+            <h3>
+              <AlertTriangle
+                size={17}
+                style={{
+                  verticalAlign: "middle",
+                  marginRight: ".4rem",
+                  color: "#a16207",
+                }}
+              />
+              Pending Corrections
+            </h3>
+            <p>{correctionCount}</p>
+          </div>
         </div>
 
-        <div>
-          <h3>Total Faculty</h3>
-          <p>{facultyCount}</p>
+        <div className="action-grid">
+          <button className="button" onClick={() => navigate("/hod/students")}>
+            Students
+          </button>
+
+          <button
+            className="button button-secondary"
+            onClick={() => navigate("/hod/faculty")}
+          >
+            Faculty
+          </button>
+
+          <button
+            className="button button-secondary"
+            onClick={() => navigate("/hod/subjects")}
+          >
+            Subjects
+          </button>
+
+          <button
+            className="button button-secondary"
+            onClick={() => navigate("/hod/attendance")}
+          >
+            Attendance
+          </button>
+
+          <button
+            className="button button-secondary"
+            onClick={() => navigate("/hod/low-attendance")}
+          >
+            Low Attendance
+          </button>
+
+          <button
+            className="button button-secondary"
+            onClick={() => navigate("/hod/correction-requests")}
+          >
+            Correction Requests
+          </button>
         </div>
-
-        <div>
-          <h3>Total Subjects</h3>
-          <p>{subjectCount}</p>
-        </div>
-
-        <div>
-          <h3>Low Attendance</h3>
-          <p>{lowAttendanceCount}</p>
-        </div>
-
-        <div>
-          <h3>Pending Corrections</h3>
-          <p>{correctionCount}</p>
-        </div>
-      </div>
-
-      <button onClick={() => navigate("/hod/students")}>Students</button>
-
-      <button onClick={() => navigate("/hod/faculty")}>Faculty</button>
-
-      <button onClick={() => navigate("/hod/subjects")}>Subjects</button>
-
-      <button onClick={() => navigate("/hod/attendance")}>Attendance</button>
-
-      <button onClick={() => navigate("/hod/low-attendance")}>
-        Low Attendance
-      </button>
-
-      <button onClick={() => navigate("/hod/correction-requests")}>
-        Correction Requests
-      </button>
+      </main>
     </div>
   );
 }

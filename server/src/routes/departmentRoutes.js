@@ -8,7 +8,7 @@ const {
 
 const router = express.Router();
 
-router.get("/", protect, getDepartments);
+router.get("/", protect, authorize("ADMIN", "HOD", "FACULTY"), getDepartments);
 
 router.post("/", protect, authorize("ADMIN"), createDepartment);
 

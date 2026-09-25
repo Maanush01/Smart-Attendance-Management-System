@@ -16,10 +16,20 @@ const protect = async (req, res, next) => {
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    const user = await User.findById(decoded.userId).select("departmentId");
+    const user = await User.findById(decoded.userId).select(
+      "departmentId isActive role",
+    );
+
+    if (!user || !user.isActive || user.role !== decoded.role) {
+      return res.status(401).json({
+        success: false,
+        message: "User is no longer authorized",
+      });
+    }
 
     req.user = {
       ...decoded,
+      role: user.role,
       departmentId: user?.departmentId || null,
     };
 

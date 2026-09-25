@@ -108,7 +108,7 @@ function Students() {
     <div>
       <Navbar />
 
-      <h1>Students</h1>
+      <h1 className="page-heading">Students</h1>
 
       {isAdmin && (
         <div>
@@ -217,27 +217,29 @@ function Students() {
 
       <h2>Student List</h2>
 
-      <table border="1">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Roll Number</th>
-            <th>Register Number</th>
-            <th>Admission Year</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          {students.map((student) => (
-            <tr key={student._id}>
-              <td>{student.userId?.name || "N/A"}</td>
-              <td>{student.rollNumber}</td>
-              <td>{student.registerNumber || "N/A"}</td>
-              <td>{student.admissionYear}</td>
+      <div className="table-wrap">
+        <table className="data-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Roll Number</th>
+              <th>Register Number</th>
+              <th>Admission Year</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+
+          <tbody>
+            {students.map((student) => (
+              <tr key={student._id}>
+                <td>{student.userId?.name || "N/A"}</td>
+                <td>{student.rollNumber}</td>
+                <td>{student.registerNumber || "N/A"}</td>
+                <td>{student.admissionYear}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

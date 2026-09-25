@@ -63,7 +63,7 @@ function Faculty() {
     <div>
       <Navbar />
 
-      <h1>Faculty</h1>
+      <h1 className="page-heading">Faculty</h1>
 
       {isAdmin && (
         <div>
@@ -115,25 +115,27 @@ function Faculty() {
 
       <h2>Faculty List</h2>
 
-      <table border="1">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          {faculty.map((member) => (
-            <tr key={member._id}>
-              <td>{member.name}</td>
-              <td>{member.email}</td>
-              <td>{member.isActive ? "Active" : "Inactive"}</td>
+      <div className="table-wrap">
+        <table className="data-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Status</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+
+          <tbody>
+            {faculty.map((member) => (
+              <tr key={member._id}>
+                <td>{member.name}</td>
+                <td>{member.email}</td>
+                <td>{member.isActive ? "Active" : "Inactive"}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

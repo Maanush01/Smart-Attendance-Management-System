@@ -37,50 +37,52 @@ function CorrectionRequests() {
     <div>
       <Navbar />
 
-      <h1>Correction Requests</h1>
+      <h1 className="page-heading">Correction Requests</h1>
 
-      <table border="1">
-        <thead>
-          <tr>
-            <th>Student</th>
-            <th>Old Status</th>
-            <th>Requested Status</th>
-            <th>Reason</th>
-            <th>Status</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          {requests.map((request) => (
-            <tr key={request._id}>
-              <td>{request.requestedBy?.name || "N/A"}</td>
-              <td>{request.oldStatus}</td>
-              <td>{request.requestedStatus}</td>
-              <td>{request.reason}</td>
-              <td>{request.status}</td>
-
-              <td>
-                {request.status === "PENDING" && (
-                  <>
-                    <button
-                      onClick={() => reviewRequest(request._id, "APPROVED")}
-                    >
-                      Approve
-                    </button>
-
-                    <button
-                      onClick={() => reviewRequest(request._id, "REJECTED")}
-                    >
-                      Reject
-                    </button>
-                  </>
-                )}
-              </td>
+      <div className="table-wrap">
+        <table className="data-table">
+          <thead>
+            <tr>
+              <th>Student</th>
+              <th>Old Status</th>
+              <th>Requested Status</th>
+              <th>Reason</th>
+              <th>Status</th>
+              <th>Action</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+
+          <tbody>
+            {requests.map((request) => (
+              <tr key={request._id}>
+                <td>{request.requestedBy?.name || "N/A"}</td>
+                <td>{request.oldStatus}</td>
+                <td>{request.requestedStatus}</td>
+                <td>{request.reason}</td>
+                <td>{request.status}</td>
+
+                <td>
+                  {request.status === "PENDING" && (
+                    <>
+                      <button
+                        onClick={() => reviewRequest(request._id, "APPROVED")}
+                      >
+                        Approve
+                      </button>
+
+                      <button
+                        onClick={() => reviewRequest(request._id, "REJECTED")}
+                      >
+                        Reject
+                      </button>
+                    </>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

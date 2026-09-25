@@ -8,7 +8,7 @@ const {
 
 const router = express.Router();
 
-router.get("/", protect, getPrograms);
+router.get("/", protect, authorize("ADMIN", "HOD", "FACULTY"), getPrograms);
 
 router.post("/", protect, authorize("ADMIN"), createProgram);
 

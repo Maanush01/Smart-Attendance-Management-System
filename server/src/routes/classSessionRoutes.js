@@ -9,7 +9,7 @@ const {
 
 const router = express.Router();
 
-router.get("/", protect, getSessions);
+router.get("/", protect, authorize("ADMIN", "HOD", "FACULTY"), getSessions);
 
 router.post("/", protect, authorize("ADMIN", "FACULTY"), createSession);
 
