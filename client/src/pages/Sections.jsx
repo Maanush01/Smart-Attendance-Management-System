@@ -4,25 +4,119 @@ import { useEffect, useState } from "react";
 
 function Sections() {
   const [sections, setSections] = useState([]);
+  const [programs, setPrograms] = useState([]);
+
+  const [name, setName] = useState("");
+  const [programId, setProgramId] = useState("");
+  const [batchYear, setBatchYear] = useState("");
+  const [semester, setSemester] = useState("");
+  const [academicYear, setAcademicYear] = useState("");
+
+  const loadData = async () => {
+    try {
+      const [sectionsResponse, programsResponse] = await Promise.all([
+        api.get("/sections"),
+        api.get("/programs"),
+      ]);
+
+      setSections(sectionsResponse.data.data);
+      setPrograms(programsResponse.data.data);
+    } catch (error) {
+      console.error("Failed to load sections:", error);
+    }
+  };
 
   useEffect(() => {
-    const loadSections = async () => {
-      try {
-        const response = await api.get("/sections");
-        setSections(response.data.data);
-      } catch (error) {
-        console.error("Failed to load sections:", error);
-      }
-    };
-
-    loadSections();
+    loadData();
   }, []);
+
+  const createSection = async (e) => {
+    e.preventDefault();
+
+    try {
+      await api.post("/sections", {
+        name,
+        programId,
+        batchYear: Number(batchYear),
+        semester: Number(semester),
+        academicYear,
+      });
+
+      alert("Section created successfully.");
+
+      setName("");
+      setProgramId("");
+      setBatchYear("");
+      setSemester("");
+      setAcademicYear("");
+
+      loadData();
+    } catch (error) {
+      console.error("Failed to create section:", error);
+      alert("Failed to create section.");
+    }
+  };
 
   return (
     <div>
       <Navbar />
 
       <h1>Sections</h1>
+
+      <h2>Create Section</h2>
+
+      <form onSubmit={createSection}>
+        <input
+          type="text"
+          placeholder="Section Name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          required
+        />
+
+        <select
+          value={programId}
+          onChange={(e) => setProgramId(e.target.value)}
+          required
+        >
+          <option value="">Select Program</option>
+
+          {programs.map((program) => (
+            <option key={program._id} value={program._id}>
+              {program.name}
+            </option>
+          ))}
+        </select>
+
+        <input
+          type="number"
+          placeholder="Batch Year"
+          value={batchYear}
+          onChange={(e) => setBatchYear(e.target.value)}
+          required
+        />
+
+        <input
+          type="number"
+          placeholder="Semester"
+          value={semester}
+          onChange={(e) => setSemester(e.target.value)}
+          min="1"
+          required
+        />
+
+        <input
+          type="text"
+          placeholder="Academic Year (e.g. 2026-27)"
+          value={academicYear}
+          onChange={(e) => setAcademicYear(e.target.value)}
+          required
+        />
+
+        <button type="submit">Create Section</button>
+      </form>
+
+      <h2>Section List</h2>
 
       <table border="1">
         <thead>

@@ -54,4 +54,68 @@ const login = async (req, res) => {
   }
 };
 
-module.exports = { login };
+const createUser = async (req, res) => {
+  try {
+    const { name, email, password, role, departmentId } = req.body;
+
+    const existingUser = await User.findOne({ email });
+
+    if (existingUser) {
+      return res.status(400).json({
+        success: false,
+        message: "User with this email already exists",
+      });
+    }
+
+    const passwordHash = await bcrypt.hash(password, 10);
+
+    const user = await User.create({
+      name,
+      email,
+      passwordHash,
+      role,
+      departmentId: departmentId || null,
+    });
+
+    res.status(201).json({
+      success: true,
+      data: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        departmentId: user.departmentId,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+const getUsers = async (req, res) => {
+  try {
+    const users = await User.find({
+      role: "STUDENT",
+      isActive: true,
+    }).select("name email");
+
+    res.json({
+      success: true,
+      data: users,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+module.exports = {
+  login,
+  createUser,
+  getUsers,
+};

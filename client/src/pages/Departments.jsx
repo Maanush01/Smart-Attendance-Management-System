@@ -4,25 +4,72 @@ import { useEffect, useState } from "react";
 
 function Departments() {
   const [departments, setDepartments] = useState([]);
+  const [name, setName] = useState("");
+  const [code, setCode] = useState("");
+
+  const loadDepartments = async () => {
+    try {
+      const response = await api.get("/departments");
+      setDepartments(response.data.data);
+    } catch (error) {
+      console.error("Failed to load departments:", error);
+    }
+  };
 
   useEffect(() => {
-    const loadDepartments = async () => {
-      try {
-        const response = await api.get("/departments");
-        setDepartments(response.data.data);
-      } catch (error) {
-        console.error("Failed to load departments:", error);
-      }
-    };
-
     loadDepartments();
   }, []);
+
+  const createDepartment = async (e) => {
+    e.preventDefault();
+
+    try {
+      await api.post("/departments", {
+        name,
+        code,
+      });
+
+      alert("Department created successfully.");
+
+      setName("");
+      setCode("");
+
+      loadDepartments();
+    } catch (error) {
+      console.error("Failed to create department:", error);
+      alert("Failed to create department.");
+    }
+  };
 
   return (
     <div>
       <Navbar />
 
       <h1>Departments</h1>
+
+      <h2>Create Department</h2>
+
+      <form onSubmit={createDepartment}>
+        <input
+          type="text"
+          placeholder="Department Name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          required
+        />
+
+        <input
+          type="text"
+          placeholder="Department Code"
+          value={code}
+          onChange={(e) => setCode(e.target.value)}
+          required
+        />
+
+        <button type="submit">Create Department</button>
+      </form>
+
+      <h2>Department List</h2>
 
       <table border="1">
         <thead>
